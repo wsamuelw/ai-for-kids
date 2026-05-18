@@ -754,9 +754,30 @@
         transform: none !important;
       }
     }
+
+    /* ── Skip Link ── */
+    .skip-link {
+      position: absolute;
+      top: -100%;
+      left: 0;
+      background: #6c5ce7;
+      color: #fff;
+      padding: 12px 20px;
+      z-index: 200;
+      font-family: 'Baloo 2', cursive;
+      font-weight: 700;
+      font-size: 1rem;
+      border-radius: 0 0 8px 0;
+      text-decoration: none;
+    }
+    .skip-link:focus {
+      top: 0;
+    }
   </style>
 </head>
 <body>
+
+<a href="#what" class="skip-link">Skip to content</a>
 
 <!-- Nav -->
 <nav>
