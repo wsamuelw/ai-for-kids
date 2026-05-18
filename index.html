@@ -7,6 +7,7 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -1168,7 +1169,7 @@
           <div class="cert-stars bottom">⭐ ✨ 🌟 ✨ ⭐</div>
         </div>
       </div>
-      <button class="print-btn" onclick="printCertificate()">🖨️ Print My Certificate!</button>
+      <button class="print-btn" onclick="downloadCertificate()">📥 Download My Certificate!</button>
     </div>
   </div>
 </section>
@@ -1334,8 +1335,8 @@
   const certId = generateCertId();
   document.getElementById('cert-id').textContent = certId;
 
-  // Print certificate as PDF
-  function printCertificate() {
+  // Download certificate as PNG
+  async function downloadCertificate() {
     const first = document.getElementById('cert-first').value.trim();
     const last = document.getElementById('cert-last').value.trim();
     if (!first || !last) {
@@ -1343,71 +1344,29 @@
       return;
     }
 
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(`
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>Bolt's AI Adventure Certificate</title>
-        <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
-        <style>
-          * { margin: 0; padding: 0; box-sizing: border-box; }
-          body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #fff; }
-          .certificate { background: #fffdf5; border-radius: 24px; width: 800px; padding: 12px; }
-          .cert-border { border: 4px dashed #fdcb6e; border-radius: 20px; padding: 40px 32px; text-align: center; }
-          .cert-stars { font-size: 1.8rem; letter-spacing: 8px; margin-bottom: 12px; }
-          .cert-stars.bottom { margin-top: 16px; margin-bottom: 0; }
-          .cert-title { font-family: 'Baloo 2', cursive; font-size: 1.6rem; font-weight: 800; color: #6c5ce7; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 4px; }
-          .cert-subtitle { font-family: 'Baloo 2', cursive; font-size: 2.4rem; font-weight: 800; background: linear-gradient(135deg, #6c5ce7, #fd79a8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 20px; }
-          .cert-body p { font-size: 1.1rem; color: #555; margin-bottom: 12px; }
-          .cert-name-row { display: flex; justify-content: center; gap: 16px; margin: 16px 0; }
-          .cert-name { font-family: 'Baloo 2', cursive; font-size: 1.5rem; font-weight: 700; color: #2d2d2d; padding: 8px 16px; min-width: 220px; }
-          .cert-message { font-size: 1rem; color: #666; line-height: 1.5; max-width: 500px; margin: 16px auto 24px; }
-          .cert-footer-row { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; gap: 16px; }
-          .cert-signature { flex: 1; text-align: center; }
-          .cert-sig-line { width: 120px; height: 2px; background: #ddd; margin: 0 auto 6px; }
-          .cert-signature span { font-size: 0.85rem; color: #999; font-family: 'Nunito', sans-serif; }
-          .cert-badge { font-size: 3rem; }
-          .cert-id { margin-top: 16px; font-family: 'Nunito', sans-serif; font-size: 0.8rem; color: #aaa; letter-spacing: 2px; }
-          @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } .certificate { box-shadow: none; } }
-        </style>
-      </head>
-      <body>
-        <div class="certificate">
-          <div class="cert-border">
-            <div class="cert-stars">⭐ ✨ 🌟 ✨ ⭐</div>
-            <div class="cert-title">Certificate of Achievement</div>
-            <div class="cert-subtitle">Bolt's AI Adventure!</div>
-            <div class="cert-body">
-              <p>This certificate is awarded to</p>
-              <div class="cert-name-row">
-                <div class="cert-name">${first}</div>
-                <div class="cert-name">${last}</div>
-              </div>
-              <p class="cert-message">For completing Bolt's AI Adventure and becoming an AI Expert!</p>
-            </div>
-            <div class="cert-footer-row">
-              <div class="cert-signature">
-                <div class="cert-sig-line"></div>
-                <span>Bolt the Robot</span>
-              </div>
-              <div class="cert-badge">🤖</div>
-              <div class="cert-signature">
-                <div class="cert-sig-line"></div>
-                <span>${today.toLocaleDateString('en-AU', dateOptions)}</span>
-              </div>
-            </div>
-            <div class="cert-id">${certId}</div>
-            <div class="cert-stars bottom">⭐ ✨ 🌟 ✨ ⭐</div>
-          </div>
-        </div>
-        <script>
-          window.onload = function() { window.print(); }
-        <\/script>
-      </body>
-      </html>
-    `);
-    printWindow.document.close();
+    const cert = document.getElementById('certificate-card');
+    const btn = document.querySelector('.print-btn');
+    btn.textContent = '⏳ Generating...';
+    btn.disabled = true;
+
+    try {
+      const canvas = await html2canvas(cert, {
+        scale: 2,
+        backgroundColor: null,
+        useCORS: true
+      });
+
+      const link = document.createElement('a');
+      link.download = `Bolt-AI-Certificate-${first}-${last}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } catch (err) {
+      alert('Something went wrong. Please try again!');
+      console.error(err);
+    } finally {
+      btn.textContent = '📥 Download My Certificate!';
+      btn.disabled = false;
+    }
   }
 </script>
 
