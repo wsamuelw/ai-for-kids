@@ -741,6 +741,7 @@
       <div class="nav-badge" data-section="tools" title="Cool Tools">4</div>
       <div class="nav-badge" data-section="future" title="The Future">5</div>
       <div class="nav-badge" data-section="safety" title="Staying Safe">6</div>
+      <button onclick="resetAllProgress()" style="background:none;border:2px solid #ddd;border-radius:10px;padding:4px 10px;font-size:0.75rem;cursor:pointer;color:#999;font-family:'Nunito',sans-serif;margin-left:8px" title="Reset all progress">🔄 Reset</button>
     </div>
   </div>
 </nav>
@@ -1236,9 +1237,49 @@
   // Section completion tracking
   const earnedBadges = new Set();
 
+  // localStorage helpers
+  function saveProgress() {
+    localStorage.setItem('bolt-badges', JSON.stringify([...earnedBadges]));
+    localStorage.setItem('bolt-quiz-score', quizScore.toString());
+    localStorage.setItem('bolt-quiz-answered', JSON.stringify([...quizAnswered]));
+  }
+
+  function loadProgress() {
+    const badges = JSON.parse(localStorage.getItem('bolt-badges') || '[]');
+    const score = parseInt(localStorage.getItem('bolt-quiz-score') || '0', 10);
+    const answered = JSON.parse(localStorage.getItem('bolt-quiz-answered') || '[]');
+    return { badges, score, answered };
+  }
+
+  function clearProgress() {
+    localStorage.removeItem('bolt-badges');
+    localStorage.removeItem('bolt-quiz-score');
+    localStorage.removeItem('bolt-quiz-answered');
+  }
+
+  function restoreBadges(badges) {
+    badges.forEach(sectionId => {
+      earnedBadges.add(sectionId);
+      const navBadge = document.querySelector(`.nav-badge[data-section="${sectionId}"]`);
+      if (navBadge) {
+        navBadge.classList.add('earned');
+        navBadge.innerHTML = '✓';
+      }
+      const section = document.getElementById(sectionId);
+      if (section) {
+        const badge = section.querySelector('.step-badge');
+        if (badge) {
+          badge.classList.add('complete');
+          badge.querySelector('.check').textContent = '✅';
+        }
+      }
+    });
+  }
+
   function earnBadge(sectionId) {
     if (earnedBadges.has(sectionId)) return;
     earnedBadges.add(sectionId);
+    saveProgress();
 
     // Update nav badge
     const navBadge = document.querySelector(`.nav-badge[data-section="${sectionId}"]`);
@@ -1324,13 +1365,14 @@
           quizAnswered.add(quizId);
           quizScore++;
           document.getElementById('quiz-score').textContent = quizScore;
+          saveProgress();
           feedback.textContent = '🎉 That\'s right! Amazing!';
           feedback.style.color = '#00b894';
         } else if (correct) {
           feedback.textContent = '🎉 Yes! You remembered!';
           feedback.style.color = '#00b894';
         } else {
-          feedback.textContent = '🤔 Not quite,try again!';
+          feedback.textContent = '🤔 Not quite, try again!';
           feedback.style.color = '#d63031';
         }
 
@@ -1347,6 +1389,75 @@
       });
     });
   });
+
+  // Restore progress on page load
+  const savedProgress = loadProgress();
+  if (savedProgress.badges.length > 0) {
+    restoreBadges(savedProgress.badges);
+  }
+  if (savedProgress.score > 0) {
+    quizScore = savedProgress.score;
+    document.getElementById('quiz-score').textContent = quizScore;
+    savedProgress.answered.forEach(id => quizAnswered.add(id));
+  }
+
+  // Welcome back message
+  if (savedProgress.badges.length > 0 || savedProgress.score > 0) {
+    const welcomeDiv = document.createElement('div');
+    welcomeDiv.style.cssText = 'position:fixed;bottom:20px;right:20px;background:linear-gradient(135deg,#6c5ce7,#a29bfe);color:#fff;padding:16px 24px;border-radius:16px;box-shadow:0 8px 30px rgba(108,92,231,0.4);z-index:200;font-family:"Baloo 2",cursive;font-size:1rem;animation:celebrationPop 0.6s ease;cursor:pointer;';
+    welcomeDiv.innerHTML = '👋 Welcome back! You have ' + savedProgress.badges.length + '/6 badges!';
+    welcomeDiv.addEventListener('click', () => welcomeDiv.remove());
+    document.body.appendChild(welcomeDiv);
+    setTimeout(() => welcomeDiv.remove(), 5000);
+  }
+
+  // Reset progress function
+  function resetAllProgress() {
+    if (confirm('Are you sure you want to start fresh? This will remove all your badges and scores!')) {
+      clearProgress();
+      earnedBadges.clear();
+      quizScore = 0;
+      quizAnswered.clear();
+
+      // Reset all nav badges
+      document.querySelectorAll('.nav-badge').forEach(badge => {
+        badge.classList.remove('earned');
+        const num = badge.dataset.section ? ['what','can','help','tools','future','safety'].indexOf(badge.dataset.section) + 1 : 0;
+        badge.innerHTML = num;
+      });
+
+      // Reset all step badges
+      document.querySelectorAll('.step-badge').forEach(badge => {
+        badge.classList.remove('complete');
+        badge.querySelector('.check').textContent = '⬜';
+      });
+
+      // Reset quiz
+      document.getElementById('quiz-score').textContent = '0';
+      document.querySelectorAll('.quiz-btn').forEach(btn => {
+        btn.classList.remove('correct', 'wrong');
+      });
+      document.querySelectorAll('.quiz-feedback').forEach(fb => {
+        fb.textContent = '';
+      });
+
+      // Reset mini-checks
+      document.querySelectorAll('.mini-check-btn').forEach(btn => {
+        btn.classList.remove('correct', 'wrong');
+      });
+      document.querySelectorAll('.mini-feedback').forEach(fb => {
+        fb.textContent = '';
+      });
+
+      // Remove try again buttons
+      document.querySelectorAll('.mini-check button').forEach(btn => {
+        if (btn.textContent.includes('Try Again')) btn.remove();
+      });
+
+      alert('All progress cleared! Starting fresh! 🎉');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
 
   // Set today's date on certificate
   const today = new Date();
