@@ -1155,7 +1155,8 @@
       <div class="quiz-feedback"></div>
     </div>
     <div style="text-align:center;margin-top:40px">
-      <a href="#certificate" class="print-btn" style="text-decoration:none;display:inline-block" id="cert-link" style="opacity:0.5;pointer-events:none">🎓 Get Your Certificate!</a>
+      <div id="quiz-complete-msg" style="display:none;margin-bottom:16px;font-family:'Baloo 2',cursive;font-size:1.2rem;color:#6c5ce7"></div>
+      <a href="#certificate" class="print-btn" style="text-decoration:none;display:none" id="cert-link">🎓 Get Your Certificate!</a>
     </div>
   </div>
 </section>
@@ -1348,6 +1349,26 @@
   // Final quiz logic
   let quizScore = 0;
   const quizAnswered = new Set();
+  const totalQuizQuestions = 6;
+
+  function checkQuizComplete() {
+    const certLink = document.getElementById('cert-link');
+    const quizMsg = document.getElementById('quiz-complete-msg');
+    if (quizScore === totalQuizQuestions) {
+      certLink.style.display = 'inline-block';
+      quizMsg.style.display = 'block';
+      quizMsg.innerHTML = '🎉 You got all 6 right! You earned your certificate!';
+      quizMsg.style.color = '#00b894';
+    } else if (quizAnswered.size === totalQuizQuestions) {
+      certLink.style.display = 'none';
+      quizMsg.style.display = 'block';
+      quizMsg.innerHTML = '🤔 You got ' + quizScore + ' out of 6. Try again to earn your certificate!';
+      quizMsg.style.color = '#d63031';
+    } else {
+      certLink.style.display = 'none';
+      quizMsg.style.display = 'none';
+    }
+  }
 
   document.querySelectorAll('.quiz-box').forEach(box => {
     const btns = box.querySelectorAll('.quiz-btn');
@@ -1369,6 +1390,7 @@
           saveProgress();
           feedback.textContent = '🎉 That\'s right! Amazing!';
           feedback.style.color = '#00b894';
+          checkQuizComplete();
         } else if (correct) {
           feedback.textContent = '🎉 Yes! You remembered!';
           feedback.style.color = '#00b894';
@@ -1400,6 +1422,7 @@
     quizScore = savedProgress.score;
     document.getElementById('quiz-score').textContent = quizScore;
     savedProgress.answered.forEach(id => quizAnswered.add(id));
+    checkQuizComplete();
   }
 
   // Welcome back message
