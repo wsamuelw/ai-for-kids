@@ -1236,20 +1236,8 @@
 </section>
 
 <!-- Certificate -->
-<section class="bg-orange" id="certificate">
+<section class="bg-orange" id="certificate" style="display:none">
   <div class="section fade-in">
-    <div class="section-header">
-      <span class="icon">🎉</span>
-      <h2>You Did It!</h2>
-      <p>Congratulations! You're now an AI Explorer!</p>
-    </div>
-    <div class="bolt">
-      <div class="bolt-avatar">🤖</div>
-      <div class="bolt-bubble">
-        <div class="bolt-name">Bolt says:</div>
-        <div class="bolt-text">I'm SO proud of you! You learned all about AI and you're ready for the future. Here's your certificate,you earned it!</div>
-      </div>
-    </div>
     <div class="certificate-wrap">
       <div class="certificate" id="certificate-card">
         <div class="cert-border">
@@ -1433,18 +1421,22 @@
   function checkQuizComplete() {
     const certLink = document.getElementById('cert-link');
     const quizMsg = document.getElementById('quiz-complete-msg');
+    const certSection = document.getElementById('certificate');
     if (quizScore === totalQuizQuestions) {
       certLink.style.display = 'inline-block';
+      certSection.style.display = 'block';
       quizMsg.style.display = 'block';
       quizMsg.innerHTML = '🎉 You got all 6 right! You earned your certificate!';
       quizMsg.style.color = '#00b894';
     } else if (quizAttempted.size === totalQuizQuestions) {
       certLink.style.display = 'none';
+      certSection.style.display = 'none';
       quizMsg.style.display = 'block';
       quizMsg.innerHTML = '🤔 You got ' + quizScore + ' out of 6. Try again to earn your certificate!';
       quizMsg.style.color = '#e67e22';
     } else {
       certLink.style.display = 'none';
+      certSection.style.display = 'none';
       quizMsg.style.display = 'none';
     }
   }
