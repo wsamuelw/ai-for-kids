@@ -341,7 +341,7 @@
     }
     .mini-check-btn:hover { border-color: #6c5ce7; background: #f8f6ff; }
     .mini-check-btn.correct { border-color: #00b894; background: #e6fcf5; color: #00b894; }
-    .mini-check-btn.wrong { border-color: #d63031; background: #ffeaea; color: #d63031; }
+    .mini-check-btn.wrong { border-color: #e67e22; background: #fef5e7; color: #e67e22; }
     .mini-feedback {
       margin-top: 12px;
       font-family: 'Baloo 2', cursive;
@@ -504,7 +504,7 @@
     }
     .quiz-btn:hover { border-color: #6c5ce7; background: #f8f6ff; }
     .quiz-btn.correct { border-color: #00b894; background: #e6fcf5; color: #00b894; }
-    .quiz-btn.wrong { border-color: #d63031; background: #ffeaea; color: #d63031; }
+    .quiz-btn.wrong { border-color: #e67e22; background: #fef5e7; color: #e67e22; }
     .quiz-feedback {
       margin-top: 16px;
       font-family: 'Baloo 2', cursive;
@@ -1402,7 +1402,7 @@
           if (sectionId) earnBadge(sectionId);
         } else {
           feedback.textContent = '🤔 Hmm, not quite! Try again!';
-          feedback.style.color = '#d63031';
+          feedback.style.color = '#e67e22';
 
           // Add try again button only when wrong
           const resetBtn = document.createElement('button');
@@ -1439,7 +1439,7 @@
       certLink.style.display = 'none';
       quizMsg.style.display = 'block';
       quizMsg.innerHTML = '🤔 You got ' + quizScore + ' out of 6. Try again to earn your certificate!';
-      quizMsg.style.color = '#d63031';
+      quizMsg.style.color = '#e67e22';
     } else {
       certLink.style.display = 'none';
       quizMsg.style.display = 'none';
@@ -1474,7 +1474,7 @@
         } else {
           quizAttempted.add(quizId);
           feedback.textContent = '🤔 Not quite, try again!';
-          feedback.style.color = '#d63031';
+          feedback.style.color = '#e67e22';
           checkQuizComplete();
 
           const resetBtn = document.createElement('button');
