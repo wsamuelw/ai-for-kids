@@ -1255,20 +1255,20 @@
         } else {
           feedback.textContent = '🤔 Hmm, not quite! Try again!';
           feedback.style.color = '#d63031';
-        }
 
-        // Add try again button
-        const resetBtn = document.createElement('button');
-        resetBtn.textContent = '🔄 Try Again';
-        resetBtn.style.cssText = 'margin-top:8px;font-family:"Nunito",sans-serif;font-size:0.85rem;padding:6px 14px;border:2px solid #ddd;border-radius:10px;background:#fff;cursor:pointer;';
-        resetBtn.addEventListener('click', () => {
-          answered = false;
-          wasCorrect = false;
-          btns.forEach(b => b.classList.remove('correct', 'wrong'));
-          feedback.textContent = '';
-          resetBtn.remove();
-        });
-        feedback.parentNode.insertBefore(resetBtn, feedback.nextSibling);
+          // Add try again button only when wrong
+          const resetBtn = document.createElement('button');
+          resetBtn.textContent = '🔄 Try Again';
+          resetBtn.style.cssText = 'margin-top:8px;font-family:"Nunito",sans-serif;font-size:0.85rem;padding:6px 14px;border:2px solid #ddd;border-radius:10px;background:#fff;cursor:pointer;';
+          resetBtn.addEventListener('click', () => {
+            answered = false;
+            wasCorrect = false;
+            btns.forEach(b => b.classList.remove('correct', 'wrong'));
+            feedback.textContent = '';
+            resetBtn.remove();
+          });
+          feedback.parentNode.insertBefore(resetBtn, feedback.nextSibling);
+        }
       });
     });
   });
