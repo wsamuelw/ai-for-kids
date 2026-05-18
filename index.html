@@ -368,14 +368,15 @@
     /* ── Parent Tip ── */
     .parent-tip {
       background: #fff9e6;
-      border-left: 4px solid #fdcb6e;
-      border-radius: 0 12px 12px 0;
-      padding: 12px 16px;
-      margin-top: 24px;
-      font-size: 0.9rem;
-      color: #666;
+      border-left: 5px solid #fdcb6e;
+      border-radius: 0 16px 16px 0;
+      padding: 20px 24px;
+      margin-top: 32px;
+      font-size: 1rem;
+      color: #555;
+      line-height: 1.6;
     }
-    .parent-tip strong { color: #e17055; }
+    .parent-tip strong { color: #e17055; font-size: 1.05rem; }
 
     /* ── Timeline ── */
     .timeline {
@@ -589,18 +590,19 @@
     .cert-name-row {
       display: flex;
       justify-content: center;
-      gap: 16px;
-      margin: 16px 0;
-      flex-wrap: wrap;
+      margin: 20px 0;
     }
     .cert-input {
       font-family: 'Baloo 2', cursive;
-      font-size: 1.5rem;
+      font-size: 1.8rem;
       font-weight: 700;
       text-align: center;
-      border: none;
-      border-bottom: 3px solid #6c5ce7;
-      background: transparent;
+      border: 3px dashed #a29bfe;
+      border-radius: 16px;
+      background: rgba(108, 92, 231, 0.05);
+      padding: 12px 24px;
+      width: 100%;
+      max-width: 400px;
       color: #2d2d2d;
       padding: 8px 16px;
       width: 220px;
@@ -1235,6 +1237,59 @@
   </div>
 </section>
 
+<!-- Recap -->
+<section class="bg-green" id="recap" style="display:none">
+  <div class="section fade-in">
+    <div class="section-header">
+      <span class="icon">🎓</span>
+      <h2>You Learned!</h2>
+      <p>Look at everything you discovered about AI!</p>
+    </div>
+    <div class="bolt">
+      <div class="bolt-avatar">🤖</div>
+      <div class="bolt-bubble">
+        <div class="bolt-name">Bolt says:</div>
+        <div class="bolt-text">Wow, you learned SO much! Let's remember what we discovered together!</div>
+      </div>
+    </div>
+    <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+      <div class="card" style="border-top: 4px solid #6c5ce7;">
+        <span class="card-icon">🧠</span>
+        <h3>What is AI?</h3>
+        <p>AI is a computer that learns from examples, just like you!</p>
+      </div>
+      <div class="card" style="border-top: 4px solid #fd79a8;">
+        <span class="card-icon">✨</span>
+        <h3>What AI Can Do</h3>
+        <p>Draw pictures, chat, make music, create videos, and work as a team!</p>
+      </div>
+      <div class="card" style="border-top: 4px solid #00b894;">
+        <span class="card-icon">🤝</span>
+        <h3>AI Helps Us</h3>
+        <p>Voice assistants, video suggestions, games, and learning apps!</p>
+      </div>
+      <div class="card" style="border-top: 4px solid #0984e3;">
+        <span class="card-icon">🛠️</span>
+        <h3>Cool AI Tools</h3>
+        <p>ChatGPT, Claude, Gemini, and Ollama!</p>
+      </div>
+      <div class="card" style="border-top: 4px solid #fdcb6e;">
+        <span class="card-icon">🚀</span>
+        <h3>The Future</h3>
+        <p>Robot friends, smart toys, and dream machines!</p>
+      </div>
+      <div class="card" style="border-top: 4px solid #e17055;">
+        <span class="card-icon">🛡️</span>
+        <h3>Staying Safe</h3>
+        <p>AI makes mistakes, keep secrets safe, always ask a grown-up!</p>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:32px">
+      <a href="#certificate" class="print-btn" style="text-decoration:none;display:inline-block">🎓 Get Your Certificate!</a>
+    </div>
+  </div>
+</section>
+
 <!-- Certificate -->
 <section class="bg-orange" id="certificate" style="display:none">
   <div class="section fade-in">
@@ -1247,10 +1302,8 @@
           <div class="cert-body">
             <p>This certificate is awarded to</p>
             <div class="cert-name-row">
-              <label for="cert-first" class="sr-only">First Name</label>
-              <input type="text" id="cert-first" class="cert-input" placeholder="First Name" maxlength="20">
-              <label for="cert-last" class="sr-only">Last Name</label>
-              <input type="text" id="cert-last" class="cert-input" placeholder="Last Name" maxlength="20">
+              <label for="cert-name" class="sr-only">Your Name</label>
+              <input type="text" id="cert-name" class="cert-input" placeholder="Type your name here, Explorer!" maxlength="40">
             </div>
             <p class="cert-message">For completing Bolt's AI Adventure and becoming an AI Explorer!</p>
           </div>
@@ -1417,25 +1470,33 @@
   const quizAnswered = new Set();
   const quizAttempted = new Set();
   const totalQuizQuestions = 6;
+  const certThreshold = 4;
 
   function checkQuizComplete() {
     const certLink = document.getElementById('cert-link');
     const quizMsg = document.getElementById('quiz-complete-msg');
     const certSection = document.getElementById('certificate');
-    if (quizScore === totalQuizQuestions) {
-      certLink.style.display = 'inline-block';
-      certSection.style.display = 'block';
+    const recapSection = document.getElementById('recap');
+    if (quizScore >= certThreshold) {
+      recapSection.style.display = 'block';
+      certSection.style.display = 'none';
       quizMsg.style.display = 'block';
-      quizMsg.innerHTML = '🎉 You got all 6 right! You earned your certificate!';
+      if (quizScore === totalQuizQuestions) {
+        quizMsg.innerHTML = '🎉 Perfect score! You earned your certificate!';
+      } else {
+        quizMsg.innerHTML = '🎉 You got ' + quizScore + ' out of 6! You earned your certificate!';
+      }
       quizMsg.style.color = '#00b894';
     } else if (quizAttempted.size === totalQuizQuestions) {
       certLink.style.display = 'none';
+      recapSection.style.display = 'none';
       certSection.style.display = 'none';
       quizMsg.style.display = 'block';
-      quizMsg.innerHTML = '🤔 You got ' + quizScore + ' out of 6. Try again to earn your certificate!';
+      quizMsg.innerHTML = '🤔 You got ' + quizScore + ' out of 6. You need 4 or more to earn your certificate!';
       quizMsg.style.color = '#e67e22';
     } else {
       certLink.style.display = 'none';
+      recapSection.style.display = 'none';
       certSection.style.display = 'none';
       quizMsg.style.display = 'none';
     }
@@ -1584,10 +1645,9 @@
 
   // Download certificate as PNG
   async function downloadCertificate() {
-    const first = document.getElementById('cert-first').value.trim();
-    const last = document.getElementById('cert-last').value.trim();
-    if (!first || !last) {
-      alert('Please type your first and last name first! 📝');
+    const name = document.getElementById('cert-name').value.trim();
+    if (!name) {
+      alert('Please type your name first! 📝');
       return;
     }
 
@@ -1606,7 +1666,7 @@
       });
 
       const link = document.createElement('a');
-      link.download = `Bolt-AI-Certificate-${first}-${last}.png`;
+      link.download = `Bolt-AI-Certificate-${name}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
     } catch (err) {
