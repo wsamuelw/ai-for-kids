@@ -756,6 +756,17 @@
     }
 
     /* ── Skip Link ── */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+      border: 0;
+    }
     .skip-link {
       position: absolute;
       top: -100%;
@@ -1235,7 +1246,9 @@
           <div class="cert-body">
             <p>This certificate is awarded to</p>
             <div class="cert-name-row">
+              <label for="cert-first" class="sr-only">First Name</label>
               <input type="text" id="cert-first" class="cert-input" placeholder="First Name" maxlength="20">
+              <label for="cert-last" class="sr-only">Last Name</label>
               <input type="text" id="cert-last" class="cert-input" placeholder="Last Name" maxlength="20">
             </div>
             <p class="cert-message">For completing Bolt's AI Adventure and becoming an AI Expert!</p>
