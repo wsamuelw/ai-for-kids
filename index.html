@@ -1349,6 +1349,7 @@
   // Final quiz logic
   let quizScore = 0;
   const quizAnswered = new Set();
+  const quizAttempted = new Set();
   const totalQuizQuestions = 6;
 
   function checkQuizComplete() {
@@ -1359,7 +1360,7 @@
       quizMsg.style.display = 'block';
       quizMsg.innerHTML = '🎉 You got all 6 right! You earned your certificate!';
       quizMsg.style.color = '#00b894';
-    } else if (quizAnswered.size === totalQuizQuestions) {
+    } else if (quizAttempted.size === totalQuizQuestions) {
       certLink.style.display = 'none';
       quizMsg.style.display = 'block';
       quizMsg.innerHTML = '🤔 You got ' + quizScore + ' out of 6. Try again to earn your certificate!';
@@ -1385,6 +1386,7 @@
 
         if (correct && !quizAnswered.has(quizId)) {
           quizAnswered.add(quizId);
+          quizAttempted.add(quizId);
           quizScore++;
           document.getElementById('quiz-score').textContent = quizScore;
           saveProgress();
@@ -1395,17 +1397,21 @@
           feedback.textContent = '🎉 Yes! You remembered!';
           feedback.style.color = '#00b894';
         } else {
+          quizAttempted.add(quizId);
           feedback.textContent = '🤔 Not quite, try again!';
           feedback.style.color = '#d63031';
+          checkQuizComplete();
 
           const resetBtn = document.createElement('button');
           resetBtn.textContent = '🔄 Try Again';
           resetBtn.style.cssText = 'margin-top:8px;font-family:"Nunito",sans-serif;font-size:0.85rem;padding:6px 14px;border:2px solid #ddd;border-radius:10px;background:#fff;cursor:pointer;';
           resetBtn.addEventListener('click', () => {
             answered = false;
+            quizAttempted.delete(quizId);
             btns.forEach(b => b.classList.remove('correct', 'wrong'));
             feedback.textContent = '';
             resetBtn.remove();
+            checkQuizComplete();
           });
           feedback.parentNode.insertBefore(resetBtn, feedback.nextSibling);
         }
@@ -1421,7 +1427,10 @@
   if (savedProgress.score > 0) {
     quizScore = savedProgress.score;
     document.getElementById('quiz-score').textContent = quizScore;
-    savedProgress.answered.forEach(id => quizAnswered.add(id));
+    savedProgress.answered.forEach(id => {
+      quizAnswered.add(id);
+      quizAttempted.add(id);
+    });
     checkQuizComplete();
   }
 
