@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bolt's AI Adventure! 🤖</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      color: #2d2d2d;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(10px);
+      z-index: 100;
+      padding: 12px 0;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+    .progress-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #6c5ce7, #fd79a8);
+      width: 0%;
+      transition: width 0.1s;
+    }
+    .nav-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    .nav-brand {
+      font-family: 'Baloo 2', cursive;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: #6c5ce7;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .nav-badges {
+      display: flex;
+      gap: 4px;
+    }
+    .nav-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #e0e0e0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      transition: all 0.3s;
+      cursor: default;
+    }
+    .nav-badge.earned {
+      background: linear-gradient(135deg, #fdcb6e, #f39c12);
+      box-shadow: 0 2px 8px rgba(253,203,110,0.5);
+      animation: badgePop 0.5s ease;
+    }
+    .nav-badge[title]:hover::after {
+      content: attr(title);
+      position: absolute;
+      top: 100%;
+      background: #333;
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      white-space: nowrap;
+      margin-top: 4px;
+    }
+
+    /* ── Bolt Mascot ── */
+    .bolt {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin: 32px 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #f8f6ff 0%, #fff 100%);
+      border-radius: 20px;
+      border: 2px solid #e8e4f8;
+    }
+    .bolt-avatar {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(108,92,231,0.3);
+      animation: boltWiggle 3s ease-in-out infinite;
+    }
+    .bolt-bubble {
+      background: #fff;
+      border-radius: 16px;
+      padding: 16px 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+      position: relative;
+      flex: 1;
+    }
+    .bolt-bubble::before {
+      content: '';
+      position: absolute;
+      left: -8px;
+      top: 20px;
+      width: 16px;
+      height: 16px;
+      background: #fff;
+      transform: rotate(45deg);
+      box-shadow: -2px -2px 4px rgba(0,0,0,0.04);
+    }
+    .bolt-name {
+      font-family: 'Baloo 2', cursive;
+      font-weight: 700;
+      color: #6c5ce7;
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+    }
+    .bolt-text {
+      font-size: 1.05rem;
+      line-height: 1.5;
+      color: #444;
+    }
+    .bolt-text strong { color: #6c5ce7; }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 80px 24px 40px;
+      background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 50%, #fd79a8 100%);
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 50%;
+      top: -200px;
+      right: -100px;
+      animation: float 6s ease-in-out infinite;
+    }
+    .hero h1 {
+      font-family: 'Baloo 2', cursive;
+      font-size: clamp(2.5rem, 8vw, 4.5rem);
+      font-weight: 800;
+      margin-bottom: 16px;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+    .hero p {
+      font-size: clamp(1.1rem, 3vw, 1.4rem);
+      max-width: 600px;
+      opacity: 0.95;
+      line-height: 1.6;
+    }
+    .hero .robot-emoji {
+      font-size: clamp(4rem, 12vw, 7rem);
+      margin-bottom: 20px;
+      animation: bounce 2s ease-in-out infinite;
+      filter: drop-shadow(0 8px 24px rgba(0,0,0,0.2));
+    }
+    .hero-start {
+      margin-top: 32px;
+      font-family: 'Baloo 2', cursive;
+      font-size: 1.3rem;
+      font-weight: 700;
+      background: #fff;
+      color: #6c5ce7;
+      border: none;
+      border-radius: 16px;
+      padding: 16px 40px;
+      cursor: pointer;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.2);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .hero-start:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 10px 32px rgba(0,0,0,0.3);
+    }
+
+    /* ── Section Step Badge ── */
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+      color: #fff;
+      font-family: 'Baloo 2', cursive;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+    }
+    .step-badge .check { opacity: 0.5; }
+    .step-badge.complete .check { opacity: 1; }
+
+    /* ── Sections ── */
+    .section {
+      padding: 80px 24px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .section-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .section-header .icon {
+      font-size: 3.5rem;
+      display: block;
+      margin-bottom: 12px;
+      animation: bounce 2s ease-in-out infinite;
+    }
+    .section-header h2 {
+      font-family: 'Baloo 2', cursive;
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      font-weight: 800;
+    }
+    .section-header p {
+      font-size: 1.15rem;
+      color: #666;
+      max-width: 600px;
+      margin: 12px auto 0;
+      line-height: 1.6;
+    }
+
+    /* ── Cards ── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px;
+      margin-top: 32px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 28px 24px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+      transition: transform 0.3s, box-shadow 0.3s;
+      text-align: center;
+    }
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.14);
+    }
+    .card .card-icon {
+      font-size: 2.8rem;
+      margin-bottom: 12px;
+      display: block;
+    }
+    .card h3 {
+      font-family: 'Baloo 2', cursive;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .card p {
+      font-size: 1rem;
+      color: #555;
+      line-height: 1.5;
+    }
+
+    /* ── Mini Check ── */
+    .mini-check {
+      background: linear-gradient(135deg, #f8f6ff 0%, #fff0f6 100%);
+      border-radius: 20px;
+      padding: 24px;
+      margin-top: 32px;
+      text-align: center;
+      border: 2px dashed #d0c8f0;
+    }
+    .mini-check h4 {
+      font-family: 'Baloo 2', cursive;
+      font-size: 1.2rem;
+      margin-bottom: 12px;
+      color: #6c5ce7;
+    }
+    .mini-check-btns {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .mini-check-btn {
+      font-family: 'Nunito', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 10px 24px;
+      border: 3px solid #e0e0e0;
+      border-radius: 14px;
+      background: #fff;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .mini-check-btn:hover { border-color: #6c5ce7; background: #f8f6ff; }
+    .mini-check-btn.correct { border-color: #00b894; background: #e6fcf5; color: #00b894; }
+    .mini-check-btn.wrong { border-color: #d63031; background: #ffeaea; color: #d63031; }
+    .mini-feedback {
+      margin-top: 12px;
+      font-family: 'Baloo 2', cursive;
+      font-size: 1.1rem;
+      min-height: 1.5em;
+    }
+
+    /* ── Section Complete Celebration ── */
+    .section-complete {
+      text-align: center;
+      padding: 24px;
+      margin-top: 24px;
+      background: linear-gradient(135deg, #e6fcf5 0%, #d4f8e8 100%);
+      border-radius: 16px;
+      animation: celebrationPop 0.6s ease;
+    }
+    .section-complete .trophy { font-size: 3rem; }
+    .section-complete h4 {
+      font-family: 'Baloo 2', cursive;
+      color: #00b894;
+      margin: 8px 0;
+    }
+
+    /* ── Parent Tip ── */
+    .parent-tip {
+      background: #fff9e6;
+      border-left: 4px solid #fdcb6e;
+      border-radius: 0 12px 12px 0;
+      padding: 12px 16px;
+      margin-top: 24px;
+      font-size: 0.9rem;
+      color: #666;
+    }
+    .parent-tip strong { color: #e17055; }
+
+    /* ── Timeline ── */
+    .timeline {
+      position: relative;
+      padding-left: 40px;
+      margin-top: 32px;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 16px;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: linear-gradient(to bottom, #6c5ce7, #fd79a8);
+      border-radius: 2px;
+    }
+    .timeline-item {
+      position: relative;
+      margin-bottom: 36px;
+      padding: 20px 24px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -32px;
+      top: 24px;
+      width: 16px;
+      height: 16px;
+      background: #6c5ce7;
+      border-radius: 50%;
+      border: 3px solid #fff;
+      box-shadow: 0 0 0 3px #6c5ce7;
+    }
+    .timeline-item .year {
+      font-family: 'Baloo 2', cursive;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: #6c5ce7;
+      margin-bottom: 4px;
+    }
+    .timeline-item h3 {
+      font-family: 'Baloo 2', cursive;
+      font-size: 1.15rem;
+      margin-bottom: 6px;
+    }
+    .timeline-item p {
+      font-size: 0.95rem;
+      color: #555;
+      line-height: 1.5;
+    }
+
+    /* ── Section backgrounds ── */
+    .bg-purple { background: linear-gradient(180deg, #f3f0ff 0%, #fff 100%); }
+    .bg-pink   { background: linear-gradient(180deg, #fff0f6 0%, #fff 100%); }
+    .bg-blue   { background: linear-gradient(180deg, #e8f4fd 0%, #fff 100%); }
+    .bg-green  { background: linear-gradient(180deg, #e6fcf5 0%, #fff 100%); }
+    .bg-orange { background: linear-gradient(180deg, #fff4e6 0%, #fff 100%); }
+
+    /* ── Future cards ── */
+    .future-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-top: 32px;
+    }
+    .future-card {
+      background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+      color: #fff;
+      border-radius: 20px;
+      padding: 28px 20px;
+      text-align: center;
+      box-shadow: 0 8px 30px rgba(108,92,231,0.3);
+      transition: transform 0.3s;
+    }
+    .future-card:nth-child(2) { background: linear-gradient(135deg, #fd79a8, #e84393); box-shadow: 0 8px 30px rgba(253,121,168,0.3); }
+    .future-card:nth-child(3) { background: linear-gradient(135deg, #00b894, #00cec9); box-shadow: 0 8px 30px rgba(0,184,148,0.3); }
+    .future-card:nth-child(4) { background: linear-gradient(135deg, #fdcb6e, #f39c12); box-shadow: 0 8px 30px rgba(253,203,110,0.3); }
+    .future-card:hover { transform: translateY(-6px) scale(1.02); }
+    .future-card .card-icon { font-size: 3rem; }
+    .future-card h3 {
+      font-family: 'Baloo 2', cursive;
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+    }
+    .future-card p {
+      font-size: 0.95rem;
+      opacity: 0.92;
+      line-height: 1.4;
+    }
+
+    /* ── Quiz ── */
+    .quiz-box {
+      background: #fff;
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+      text-align: center;
+      max-width: 600px;
+      margin: 24px auto 0;
+    }
+    .quiz-box h3 {
+      font-family: 'Baloo 2', cursive;
+      font-size: 1.4rem;
+      margin-bottom: 16px;
+    }
+    .quiz-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .quiz-btn {
+      font-family: 'Nunito', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      padding: 14px 20px;
+      border: 3px solid #e0e0e0;
+      border-radius: 14px;
+      background: #fff;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .quiz-btn:hover { border-color: #6c5ce7; background: #f8f6ff; }
+    .quiz-btn.correct { border-color: #00b894; background: #e6fcf5; color: #00b894; }
+    .quiz-btn.wrong { border-color: #d63031; background: #ffeaea; color: #d63031; }
+    .quiz-feedback {
+      margin-top: 16px;
+      font-family: 'Baloo 2', cursive;
+      font-size: 1.2rem;
+      min-height: 1.5em;
+    }
+
+    /* ── Score Counter ── */
+    .score-display {
+      text-align: center;
+      margin: 24px 0;
+      font-family: 'Baloo 2', cursive;
+      font-size: 1.3rem;
+      color: #6c5ce7;
+    }
+    .score-display .score-num {
+      font-size: 2rem;
+      font-weight: 800;
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 48px 24px;
+      background: #2d2d2d;
+      color: #aaa;
+      font-size: 0.9rem;
+    }
+    footer .heart { color: #fd79a8; }
+
+    /* ── Certificate ── */
+    .certificate-wrap {
+      max-width: 700px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .certificate {
+      background: #fffdf5;
+      border-radius: 24px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+      overflow: hidden;
+    }
+    .cert-border {
+      border: 4px dashed #fdcb6e;
+      border-radius: 20px;
+      margin: 12px;
+      padding: 40px 32px;
+    }
+    .cert-stars {
+      font-size: 1.8rem;
+      letter-spacing: 8px;
+      margin-bottom: 12px;
+    }
+    .cert-stars.bottom { margin-top: 16px; margin-bottom: 0; }
+    .cert-title {
+      font-family: 'Baloo 2', cursive;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #6c5ce7;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 4px;
+    }
+    .cert-subtitle {
+      font-family: 'Baloo 2', cursive;
+      font-size: 2.4rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #6c5ce7, #fd79a8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 20px;
+    }
+    .cert-body p {
+      font-size: 1.1rem;
+      color: #555;
+      margin-bottom: 12px;
+    }
+    .cert-name-row {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin: 16px 0;
+      flex-wrap: wrap;
+    }
+    .cert-input {
+      font-family: 'Baloo 2', cursive;
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-align: center;
+      border: none;
+      border-bottom: 3px solid #6c5ce7;
+      background: transparent;
+      color: #2d2d2d;
+      padding: 8px 16px;
+      width: 220px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    .cert-input::placeholder {
+      color: #ccc;
+      font-weight: 400;
+    }
+    .cert-input:focus {
+      border-bottom-color: #fd79a8;
+    }
+    .cert-message {
+      font-size: 1rem;
+      color: #666;
+      line-height: 1.5;
+      max-width: 500px;
+      margin: 16px auto 24px;
+    }
+    .cert-footer-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 24px;
+      gap: 16px;
+    }
+    .cert-signature {
+      flex: 1;
+      text-align: center;
+    }
+    .cert-sig-line {
+      width: 120px;
+      height: 2px;
+      background: #ddd;
+      margin: 0 auto 6px;
+    }
+    .cert-signature span {
+      font-size: 0.85rem;
+      color: #999;
+    }
+    .cert-badge {
+      font-size: 3rem;
+      animation: bounce 2s ease-in-out infinite;
+    }
+    .print-btn {
+      font-family: 'Baloo 2', cursive;
+      font-size: 1.2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+      color: #fff;
+      border: none;
+      border-radius: 16px;
+      padding: 14px 36px;
+      cursor: pointer;
+      margin-top: 24px;
+      box-shadow: 0 6px 20px rgba(108,92,231,0.4);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .print-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(108,92,231,0.5);
+    }
+
+    /* ── Safety Section ── */
+    .safety-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-top: 32px;
+    }
+    .safety-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      border-top: 4px solid #fdcb6e;
+    }
+    .safety-card .card-icon { font-size: 2.5rem; margin-bottom: 8px; }
+    .safety-card h3 {
+      font-family: 'Baloo 2', cursive;
+      font-size: 1.1rem;
+      margin-bottom: 6px;
+    }
+    .safety-card p { font-size: 0.95rem; color: #555; line-height: 1.4; }
+
+    /* ── Animations ── */
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      50% { transform: translate(-20px, 30px) rotate(5deg); }
+    }
+    @keyframes boltWiggle {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-5deg); }
+      75% { transform: rotate(5deg); }
+    }
+    @keyframes badgePop {
+      0% { transform: scale(0.5); }
+      50% { transform: scale(1.3); }
+      100% { transform: scale(1); }
+    }
+    @keyframes celebrationPop {
+      0% { transform: scale(0.8); opacity: 0; }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .card-grid { grid-template-columns: 1fr; }
+      .future-grid { grid-template-columns: 1fr; }
+      .quiz-options { grid-template-columns: 1fr; }
+      .timeline { padding-left: 32px; }
+      .section { padding: 60px 20px; }
+      .bolt { flex-direction: column; align-items: center; text-align: center; }
+      .bolt-bubble::before { display: none; }
+      .nav-badge { width: 22px; height: 22px; font-size: 0.65rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <div class="progress-bar" id="progress-bar"></div>
+  <div class="nav-inner">
+    <div class="nav-brand">🤖 Bolt's AI Adventure</div>
+    <div class="nav-badges" id="nav-badges">
+      <div class="nav-badge" data-section="what" title="What is AI?">1</div>
+      <div class="nav-badge" data-section="can" title="What Can AI Do?">2</div>
+      <div class="nav-badge" data-section="help" title="AI Helps Us">3</div>
+      <div class="nav-badge" data-section="tools" title="Cool Tools">4</div>
+      <div class="nav-badge" data-section="future" title="The Future">5</div>
+      <div class="nav-badge" data-section="safety" title="Staying Safe">6</div>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero" id="top">
+  <div class="robot-emoji">🤖</div>
+  <h1>Bolt's AI Adventure!</h1>
+  <p>Hi! I'm <strong>Bolt</strong>! I'm a friendly robot, and I'm going to teach you all about AI. Ready to start an adventure?</p>
+  <button class="hero-start" onclick="document.getElementById('what').scrollIntoView({behavior:'smooth'})">Let's Go! 🚀</button>
+</section>
+
+<!-- Section 1: What is AI? -->
+<section class="bg-purple" id="what">
+  <div class="section fade-in">
+    <div class="step-badge" data-badge="1">
+      <span class="check">⬜</span> Step 1 of 6
+    </div>
+    <div class="section-header">
+      <span class="icon">🧠</span>
+      <h2>What is AI?</h2>
+      <p>AI stands for <strong>Artificial Intelligence</strong>. It's like teaching a computer to learn — just like you!</p>
+    </div>
+    <div class="bolt">
+      <div class="bolt-avatar">🤖</div>
+      <div class="bolt-bubble">
+        <div class="bolt-name">Bolt says:</div>
+        <div class="bolt-text">Think of AI like teaching your pet dog new tricks. You show the dog what to do, and after lots of practice, it learns! AI works the same way — but instead of a dog, it's a computer!</div>
+      </div>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <span class="card-icon">📚</span>
+        <h3>Learns from Examples</h3>
+        <p>Show a computer thousands of cat photos, and it learns what a cat looks like — just like you learned your ABCs!</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🧩</span>
+        <h3>Solves Problems</h3>
+        <p>AI can figure out puzzles and find patterns — sometimes faster than grown-ups!</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🎯</span>
+        <h3>Gets Better with Practice</h3>
+        <p>The more AI practises, the smarter it gets — just like riding a bike!</p>
+      </div>
+    </div>
+    <div class="mini-check" data-check="1">
+      <h4>Quick Check! 🤔</h4>
+      <p>How does AI learn?</p>
+      <div class="mini-check-btns">
+        <button class="mini-check-btn" data-correct="true">By looking at lots of examples</button>
+        <button class="mini-check-btn" data-correct="false">By eating pizza</button>
+        <button class="mini-check-btn" data-correct="false">By sleeping</button>
+      </div>
+      <div class="mini-feedback"></div>
+    </div>
+    <div class="parent-tip">
+      <strong>Parent tip:</strong> Ask your child: "Can you think of something YOU learned by looking at lots of examples?"
+    </div>
+  </div>
+</section>
+
+<!-- Section 2: What Can AI Do? -->
+<section class="bg-pink" id="can">
+  <div class="section fade-in">
+    <div class="step-badge" data-badge="2">
+      <span class="check">⬜</span> Step 2 of 6
+    </div>
+    <div class="section-header">
+      <span class="icon">✨</span>
+      <h2>What Can AI Do?</h2>
+      <p>AI can do some pretty amazing things!</p>
+    </div>
+    <div class="bolt">
+      <div class="bolt-avatar">🤖</div>
+      <div class="bolt-bubble">
+        <div class="bolt-name">Bolt says:</div>
+        <div class="bolt-text">I can do lots of cool things! I can draw, chat, make music, and even play games. Want to see what else AI can do?</div>
+      </div>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <span class="card-icon">🎨</span>
+        <h3>Draw Pictures</h3>
+        <p>Tell AI "a cat wearing a hat" and it draws it for you! How cool is that?</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">💬</span>
+        <h3>Have Conversations</h3>
+        <p>Chat with AI, ask it questions, and it answers — like a really smart pen pal!</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🎵</span>
+        <h3>Make Music</h3>
+        <p>AI can compose songs and beats. It's like having a robot DJ!</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🎬</span>
+        <h3>Make Videos</h3>
+        <p>AI can create animated cartoons from just a description — tell it a story and watch it come to life!</p>
+      </div>
+    </div>
+    <div class="mini-check" data-check="2">
+      <h4>Quick Check! 🤔</h4>
+      <p>Which of these can AI do?</p>
+      <div class="mini-check-btns">
+        <button class="mini-check-btn" data-correct="false">Make your bed</button>
+        <button class="mini-check-btn" data-correct="true">Draw a picture from words</button>
+        <button class="mini-check-btn" data-correct="false">Feed your dog</button>
+      </div>
+      <div class="mini-feedback"></div>
+    </div>
+    <div class="parent-tip">
+      <strong>Parent tip:</strong> Try asking an AI like ChatGPT or Gemini to draw something together! Ask: "Can you draw a dinosaur riding a skateboard?"
+    </div>
+  </div>
+</section>
+
+<!-- Section 3: AI Helps Us -->
+<section class="bg-blue" id="help">
+  <div class="section fade-in">
+    <div class="step-badge" data-badge="3">
+      <span class="check">⬜</span> Step 3 of 6
+    </div>
+    <div class="section-header">
+      <span class="icon">🤝</span>
+      <h2>AI Helps Us Every Day</h2>
+      <p>You probably use AI every day without even knowing it!</p>
+    </div>
+    <div class="bolt">
+      <div class="bolt-avatar">🤖</div>
+      <div class="bolt-bubble">
+        <div class="bolt-name">Bolt says:</div>
+        <div class="bolt-text">I'm everywhere! Well, AI is. Let me show you some places you might find AI hiding in your everyday life!</div>
+      </div>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <span class="card-icon">🗣️</span>
+        <h3>Voice Assistants</h3>
+        <p>"Hey Siri, what's the weather?" — that's AI listening and answering!</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">📺</span>
+        <h3>Video Recommendations</h3>
+        <p>YouTube knows what videos you like because AI learns what you enjoy!</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🎮</span>
+        <h3>Smart Game Opponents</h3>
+        <p>When you play against the computer, AI makes it clever and fun!</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">📚</span>
+        <h3>Learning Apps</h3>
+        <p>Apps that help you read and practise letters use AI to know what you need to learn next!</p>
+      </div>
+    </div>
+    <div class="mini-check" data-check="3">
+      <h4>Quick Check! 🤔</h4>
+      <p>Which of these uses AI?</p>
+      <div class="mini-check-btns">
+        <button class="mini-check-btn" data-correct="true">Voice assistants like Siri</button>
+        <button class="mini-check-btn" data-correct="false">A wooden chair</button>
+        <button class="mini-check-btn" data-correct="false">A glass of water</button>
+      </div>
+      <div class="mini-feedback"></div>
+    </div>
+    <div class="parent-tip">
+      <strong>Parent tip:</strong> Next time you use Google Maps or ask Siri a question, point it out to your child: "Look, AI is helping us right now!"
+    </div>
+  </div>
+</section>
+
+<!-- Section 4: Cool AI Tools -->
+<section class="bg-green" id="tools">
+  <div class="section fade-in">
+    <div class="step-badge" data-badge="4">
+      <span class="check">⬜</span> Step 4 of 6
+    </div>
+    <div class="section-header">
+      <span class="icon">🛠️</span>
+      <h2>Cool AI Tools</h2>
+      <p>Here are some AI tools you might want to try!</p>
+    </div>
+    <div class="bolt">
+      <div class="bolt-avatar">🤖</div>
+      <div class="bolt-bubble">
+        <div class="bolt-name">Bolt says:</div>
+        <div class="bolt-text">These are some of my friends! Each one is good at different things. Ask a grown-up to help you try one!</div>
+      </div>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <span class="card-icon">💬</span>
+        <h3>ChatGPT</h3>
+        <p>A friendly AI you can chat with! Ask it anything — stories, fun facts, or homework help!</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🧠</span>
+        <h3>Claude</h3>
+        <p>A super smart AI that can write, think, and help build cool things!</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">✨</span>
+        <h3>Gemini</h3>
+        <p>Google's AI that can chat, draw, and help you learn — like a smart friend!</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🗣️</span>
+        <h3>ElevenLabs</h3>
+        <p>AI that speaks just like a real person! It can read stories out loud in different voices!</p>
+      </div>
+    </div>
+    <div class="mini-check" data-check="4">
+      <h4>Quick Check! 🤔</h4>
+      <p>What can ChatGPT do?</p>
+      <div class="mini-check-btns">
+        <button class="mini-check-btn" data-correct="false">Wash dishes</button>
+        <button class="mini-check-btn" data-correct="true">Answer your questions</button>
+        <button class="mini-check-btn" data-correct="false">Drive a car</button>
+      </div>
+      <div class="mini-feedback"></div>
+    </div>
+    <div class="parent-tip">
+      <strong>Parent tip:</strong> Try ChatGPT or Gemini together! Ask it to tell a story about your child's favourite animal. It's a fun way to see AI in action.
+    </div>
+  </div>
+</section>
+
+<!-- Section 5: The Future -->
+<section class="bg-purple" id="future">
+  <div class="section fade-in">
+    <div class="step-badge" data-badge="5">
+      <span class="check">⬜</span> Step 5 of 6
+    </div>
+    <div class="section-header">
+      <span class="icon">🚀</span>
+      <h2>What Will AI Do Next?</h2>
+      <p>The future is super exciting!</p>
+    </div>
+    <div class="bolt">
+      <div class="bolt-avatar">🤖</div>
+      <div class="bolt-bubble">
+        <div class="bolt-name">Bolt says:</div>
+        <div class="bolt-text">I'm so excited about the future! AI is going to help us do amazing things. Maybe one day YOU'LL help build the next big AI!</div>
+      </div>
+    </div>
+    <div class="future-grid">
+      <div class="future-card">
+        <span class="card-icon">🤖</span>
+        <h3>Robot Friends</h3>
+        <p>Friendly robots that play games, tell jokes, and be your best buddy!</p>
+      </div>
+      <div class="future-card">
+        <span class="card-icon">🧸</span>
+        <h3>Smart Toys</h3>
+        <p>Toys that learn what you like and play different games with you every day!</p>
+      </div>
+      <div class="future-card">
+        <span class="card-icon">🎨</span>
+        <h3>Dream Machines</h3>
+        <p>Tell AI about your dream world and it builds it for you — castles, dragons, anything!</p>
+      </div>
+    </div>
+    <div class="mini-check" data-check="5">
+      <h4>Quick Check! 🤔</h4>
+      <p>What's one thing you'd want an AI robot friend to do?</p>
+      <div class="mini-check-btns">
+        <button class="mini-check-btn" data-correct="true">Play games with me</button>
+        <button class="mini-check-btn" data-correct="true">Tell me jokes</button>
+        <button class="mini-check-btn" data-correct="true">Help me learn new things</button>
+      </div>
+      <div class="mini-feedback"></div>
+    </div>
+    <div class="parent-tip">
+      <strong>Parent tip:</strong> Ask your child: "If you could build any AI robot, what would it do?" This encourages creative thinking about technology!
+    </div>
+  </div>
+</section>
+
+<!-- Section 6: Staying Safe with AI -->
+<section class="bg-orange" id="safety">
+  <div class="section fade-in">
+    <div class="step-badge" data-badge="6">
+      <span class="check">⬜</span> Step 6 of 6
+    </div>
+    <div class="section-header">
+      <span class="icon">🛡️</span>
+      <h2>Staying Safe with AI</h2>
+      <p>AI is awesome, but we need to be smart about using it!</p>
+    </div>
+    <div class="bolt">
+      <div class="bolt-avatar">🤖</div>
+      <div class="bolt-bubble">
+        <div class="bolt-name">Bolt says:</div>
+        <div class="bolt-text">I'm smart, but I make mistakes sometimes! Always remember: AI is a helper, not a replacement for grown-ups. Here are some important rules!</div>
+      </div>
+    </div>
+    <div class="safety-grid">
+      <div class="safety-card">
+        <div class="card-icon">🤔</div>
+        <h3>AI Makes Mistakes</h3>
+        <p>AI can be wrong sometimes. Always double-check important answers with a grown-up!</p>
+      </div>
+      <div class="safety-card">
+        <div class="card-icon">🔒</div>
+        <h3>Keep Secrets Safe</h3>
+        <p>Never share your name, address, school, or photos with AI. Talk to a grown-up first!</p>
+      </div>
+      <div class="safety-card">
+        <div class="card-icon">👨‍👩‍👧</div>
+        <h3>Ask a Grown-Up</h3>
+        <p>Before using any AI tool, always ask a parent or teacher to help you. It's more fun together anyway!</p>
+      </div>
+    </div>
+    <div class="mini-check" data-check="6">
+      <h4>Quick Check! 🤔</h4>
+      <p>What should you do before using an AI tool?</p>
+      <div class="mini-check-btns">
+        <button class="mini-check-btn" data-correct="false">Use it secretly</button>
+        <button class="mini-check-btn" data-correct="true">Ask a grown-up to help</button>
+        <button class="mini-check-btn" data-correct="false">Share your address</button>
+      </div>
+      <div class="mini-feedback"></div>
+    </div>
+    <div class="parent-tip">
+      <strong>Parent tip:</strong> Discuss digital citizenship together. Explain that AI is a tool like a hammer — useful when used correctly, but you need to be careful.
+    </div>
+  </div>
+</section>
+
+<!-- Final Quiz -->
+<section class="bg-pink" id="quiz">
+  <div class="section fade-in">
+    <div class="section-header">
+      <span class="icon">🏆</span>
+      <h2>Final Challenge!</h2>
+      <p>You've learned so much! Let's see what Bolt taught you!</p>
+    </div>
+    <div class="bolt">
+      <div class="bolt-avatar">🤖</div>
+      <div class="bolt-bubble">
+        <div class="bolt-name">Bolt says:</div>
+        <div class="bolt-text">You did amazing! Let's do a final quiz to see how much you learned. Don't worry — you can try again if you get one wrong!</div>
+      </div>
+    </div>
+    <div class="score-display">
+      Score: <span class="score-num" id="quiz-score">0</span> / 3
+    </div>
+    <div class="quiz-box" id="quiz1">
+      <h3>1. What does AI stand for?</h3>
+      <div class="quiz-options">
+        <button class="quiz-btn" data-correct="false">Amazing Inventions</button>
+        <button class="quiz-btn" data-correct="true">Artificial Intelligence</button>
+        <button class="quiz-btn" data-correct="false">Awesome Ideas</button>
+        <button class="quiz-btn" data-correct="false">Automatic Internet</button>
+      </div>
+      <div class="quiz-feedback"></div>
+    </div>
+    <div class="quiz-box" id="quiz2">
+      <h3>2. How does AI learn?</h3>
+      <div class="quiz-options">
+        <button class="quiz-btn" data-correct="false">By eating pizza</button>
+        <button class="quiz-btn" data-correct="true">By looking at lots of examples</button>
+        <button class="quiz-btn" data-correct="false">By sleeping</button>
+        <button class="quiz-btn" data-correct="false">By watching TV</button>
+      </div>
+      <div class="quiz-feedback"></div>
+    </div>
+    <div class="quiz-box" id="quiz3">
+      <h3>3. Why should you ask a grown-up before using AI?</h3>
+      <div class="quiz-options">
+        <button class="quiz-btn" data-correct="false">Because AI is boring</button>
+        <button class="quiz-btn" data-correct="false">Because grown-ups don't like AI</button>
+        <button class="quiz-btn" data-correct="true">To stay safe and get help</button>
+        <button class="quiz-btn" data-correct="false">Because AI is broken</button>
+      </div>
+      <div class="quiz-feedback"></div>
+    </div>
+    <div style="text-align:center;margin-top:40px">
+      <a href="#certificate" class="print-btn" style="text-decoration:none;display:inline-block" id="cert-link" style="opacity:0.5;pointer-events:none">🎓 Get Your Certificate!</a>
+    </div>
+  </div>
+</section>
+
+<!-- Certificate -->
+<section class="bg-orange" id="certificate">
+  <div class="section fade-in">
+    <div class="section-header">
+      <span class="icon">🎉</span>
+      <h2>You Did It!</h2>
+      <p>Congratulations! You're now an AI Expert!</p>
+    </div>
+    <div class="bolt">
+      <div class="bolt-avatar">🤖</div>
+      <div class="bolt-bubble">
+        <div class="bolt-name">Bolt says:</div>
+        <div class="bolt-text">I'm SO proud of you! You learned all about AI and you're ready for the future. Here's your certificate — you earned it!</div>
+      </div>
+    </div>
+    <div class="certificate-wrap">
+      <div class="certificate" id="certificate-card">
+        <div class="cert-border">
+          <div class="cert-stars">⭐ ✨ 🌟 ✨ ⭐</div>
+          <div class="cert-title">Certificate of Achievement</div>
+          <div class="cert-subtitle">Bolt's AI Adventure!</div>
+          <div class="cert-body">
+            <p>This certificate is awarded to</p>
+            <div class="cert-name-row">
+              <input type="text" id="cert-first" class="cert-input" placeholder="First Name" maxlength="20">
+              <input type="text" id="cert-last" class="cert-input" placeholder="Last Name" maxlength="20">
+            </div>
+            <p class="cert-message">For completing Bolt's AI Adventure and becoming an AI Expert!</p>
+          </div>
+          <div class="cert-footer-row">
+            <div class="cert-signature">
+              <div class="cert-sig-line"></div>
+              <span>Bolt the Robot</span>
+            </div>
+            <div class="cert-badge">🤖</div>
+            <div class="cert-signature">
+              <div class="cert-sig-line"></div>
+              <span id="cert-date"></span>
+            </div>
+          </div>
+          <div class="cert-stars bottom">⭐ ✨ 🌟 ✨ ⭐</div>
+        </div>
+      </div>
+      <button class="print-btn" onclick="printCertificate()">🖨️ Print My Certificate!</button>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <p>Made with <span class="heart">❤️</span> by Bolt for curious kids everywhere</p>
+  <p style="margin-top:8px;font-size:0.8rem;opacity:0.6">Bolt's AI Adventure — Learning about the future, one robot at a time!</p>
+</footer>
+
+<script>
+  // Progress bar
+  window.addEventListener('scroll', () => {
+    const scrollTop = document.documentElement.scrollTop;
+    const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const progress = (scrollTop / docHeight) * 100;
+    document.getElementById('progress-bar').style.width = progress + '%';
+  });
+
+  // Fade-in on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  // Section completion tracking
+  const earnedBadges = new Set();
+
+  function earnBadge(sectionId) {
+    if (earnedBadges.has(sectionId)) return;
+    earnedBadges.add(sectionId);
+
+    // Update nav badge
+    const navBadge = document.querySelector(`.nav-badge[data-section="${sectionId}"]`);
+    if (navBadge) {
+      navBadge.classList.add('earned');
+      navBadge.innerHTML = '✓';
+    }
+
+    // Update step badge
+    const stepBadge = document.querySelector(`.step-badge[data-badge]`);
+    if (stepBadge) {
+      const section = document.getElementById(sectionId);
+      if (section) {
+        const badge = section.querySelector('.step-badge');
+        if (badge) {
+          badge.classList.add('complete');
+          badge.querySelector('.check').textContent = '✅';
+        }
+      }
+    }
+  }
+
+  // Mini-check logic
+  document.querySelectorAll('.mini-check').forEach(check => {
+    const btns = check.querySelectorAll('.mini-check-btn');
+    const feedback = check.querySelector('.mini-feedback');
+    const checkId = check.dataset.check;
+    const sectionId = check.closest('section')?.id;
+    let answered = false;
+    let wasCorrect = false;
+
+    btns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (answered) return;
+        answered = true;
+        const correct = btn.dataset.correct === 'true';
+        btn.classList.add(correct ? 'correct' : 'wrong');
+
+        if (correct) {
+          wasCorrect = true;
+          feedback.textContent = '🎉 Yes! Bolt is proud of you!';
+          feedback.style.color = '#00b894';
+          if (sectionId) earnBadge(sectionId);
+        } else {
+          feedback.textContent = '🤔 Hmm, not quite! Try again!';
+          feedback.style.color = '#d63031';
+        }
+
+        // Add try again button
+        const resetBtn = document.createElement('button');
+        resetBtn.textContent = '🔄 Try Again';
+        resetBtn.style.cssText = 'margin-top:8px;font-family:"Nunito",sans-serif;font-size:0.85rem;padding:6px 14px;border:2px solid #ddd;border-radius:10px;background:#fff;cursor:pointer;';
+        resetBtn.addEventListener('click', () => {
+          answered = false;
+          wasCorrect = false;
+          btns.forEach(b => b.classList.remove('correct', 'wrong'));
+          feedback.textContent = '';
+          resetBtn.remove();
+        });
+        feedback.parentNode.insertBefore(resetBtn, feedback.nextSibling);
+      });
+    });
+  });
+
+  // Final quiz logic
+  let quizScore = 0;
+  const quizAnswered = new Set();
+
+  document.querySelectorAll('.quiz-box').forEach(box => {
+    const btns = box.querySelectorAll('.quiz-btn');
+    const feedback = box.querySelector('.quiz-feedback');
+    const quizId = box.id;
+    let answered = false;
+
+    btns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (answered) return;
+        answered = true;
+        const correct = btn.dataset.correct === 'true';
+        btn.classList.add(correct ? 'correct' : 'wrong');
+
+        if (correct && !quizAnswered.has(quizId)) {
+          quizAnswered.add(quizId);
+          quizScore++;
+          document.getElementById('quiz-score').textContent = quizScore;
+          feedback.textContent = '🎉 That\'s right! Amazing!';
+          feedback.style.color = '#00b894';
+        } else if (correct) {
+          feedback.textContent = '🎉 Yes! You remembered!';
+          feedback.style.color = '#00b894';
+        } else {
+          feedback.textContent = '🤔 Not quite — try again!';
+          feedback.style.color = '#d63031';
+        }
+
+        const resetBtn = document.createElement('button');
+        resetBtn.textContent = '🔄 Try Again';
+        resetBtn.style.cssText = 'margin-top:8px;font-family:"Nunito",sans-serif;font-size:0.85rem;padding:6px 14px;border:2px solid #ddd;border-radius:10px;background:#fff;cursor:pointer;';
+        resetBtn.addEventListener('click', () => {
+          answered = false;
+          btns.forEach(b => b.classList.remove('correct', 'wrong'));
+          feedback.textContent = '';
+          resetBtn.remove();
+        });
+        feedback.parentNode.insertBefore(resetBtn, feedback.nextSibling);
+      });
+    });
+  });
+
+  // Set today's date on certificate
+  const today = new Date();
+  const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+  document.getElementById('cert-date').textContent = today.toLocaleDateString('en-AU', dateOptions);
+
+  // Print certificate as PDF
+  function printCertificate() {
+    const first = document.getElementById('cert-first').value.trim();
+    const last = document.getElementById('cert-last').value.trim();
+    if (!first || !last) {
+      alert('Please type your first and last name first! 📝');
+      return;
+    }
+
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Bolt's AI Adventure Certificate</title>
+        <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #fff; }
+          .certificate { background: #fffdf5; border-radius: 24px; width: 800px; padding: 12px; }
+          .cert-border { border: 4px dashed #fdcb6e; border-radius: 20px; padding: 40px 32px; text-align: center; }
+          .cert-stars { font-size: 1.8rem; letter-spacing: 8px; margin-bottom: 12px; }
+          .cert-stars.bottom { margin-top: 16px; margin-bottom: 0; }
+          .cert-title { font-family: 'Baloo 2', cursive; font-size: 1.6rem; font-weight: 800; color: #6c5ce7; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 4px; }
+          .cert-subtitle { font-family: 'Baloo 2', cursive; font-size: 2.4rem; font-weight: 800; background: linear-gradient(135deg, #6c5ce7, #fd79a8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 20px; }
+          .cert-body p { font-size: 1.1rem; color: #555; margin-bottom: 12px; }
+          .cert-name-row { display: flex; justify-content: center; gap: 16px; margin: 16px 0; }
+          .cert-name { font-family: 'Baloo 2', cursive; font-size: 1.5rem; font-weight: 700; color: #2d2d2d; padding: 8px 16px; min-width: 220px; }
+          .cert-message { font-size: 1rem; color: #666; line-height: 1.5; max-width: 500px; margin: 16px auto 24px; }
+          .cert-footer-row { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; gap: 16px; }
+          .cert-signature { flex: 1; text-align: center; }
+          .cert-sig-line { width: 120px; height: 2px; background: #ddd; margin: 0 auto 6px; }
+          .cert-signature span { font-size: 0.85rem; color: #999; font-family: 'Nunito', sans-serif; }
+          .cert-badge { font-size: 3rem; }
+          @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } .certificate { box-shadow: none; } }
+        </style>
+      </head>
+      <body>
+        <div class="certificate">
+          <div class="cert-border">
+            <div class="cert-stars">⭐ ✨ 🌟 ✨ ⭐</div>
+            <div class="cert-title">Certificate of Achievement</div>
+            <div class="cert-subtitle">Bolt's AI Adventure!</div>
+            <div class="cert-body">
+              <p>This certificate is awarded to</p>
+              <div class="cert-name-row">
+                <div class="cert-name">${first}</div>
+                <div class="cert-name">${last}</div>
+              </div>
+              <p class="cert-message">For completing Bolt's AI Adventure and becoming an AI Expert!</p>
+            </div>
+            <div class="cert-footer-row">
+              <div class="cert-signature">
+                <div class="cert-sig-line"></div>
+                <span>Bolt the Robot</span>
+              </div>
+              <div class="cert-badge">🤖</div>
+              <div class="cert-signature">
+                <div class="cert-sig-line"></div>
+                <span>${today.toLocaleDateString('en-AU', dateOptions)}</span>
+              </div>
+            </div>
+            <div class="cert-stars bottom">⭐ ✨ 🌟 ✨ ⭐</div>
+          </div>
+        </div>
+        <script>
+          window.onload = function() { window.print(); }
+        <\/script>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+  }
+</script>
+
+</body>
+</html>
