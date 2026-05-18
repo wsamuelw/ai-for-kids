@@ -626,6 +626,13 @@
       font-size: 3rem;
       animation: bounce 2s ease-in-out infinite;
     }
+    .cert-id {
+      margin-top: 16px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.8rem;
+      color: #aaa;
+      letter-spacing: 2px;
+    }
     .print-btn {
       font-family: 'Baloo 2', cursive;
       font-size: 1.2rem;
@@ -1157,6 +1164,7 @@
               <span id="cert-date"></span>
             </div>
           </div>
+          <div class="cert-id" id="cert-id"></div>
           <div class="cert-stars bottom">⭐ ✨ 🌟 ✨ ⭐</div>
         </div>
       </div>
@@ -1311,6 +1319,21 @@
   const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
   document.getElementById('cert-date').textContent = today.toLocaleDateString('en-AU', dateOptions);
 
+  // Generate unique certificate ID: BOLT-YYYYMMDD-XXXX
+  function generateCertId() {
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let random = '';
+    for (let i = 0; i < 4; i++) {
+      random += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return `BOLT-${year}${month}${day}-${random}`;
+  }
+  const certId = generateCertId();
+  document.getElementById('cert-id').textContent = certId;
+
   // Print certificate as PDF
   function printCertificate() {
     const first = document.getElementById('cert-first').value.trim();
@@ -1345,6 +1368,7 @@
           .cert-sig-line { width: 120px; height: 2px; background: #ddd; margin: 0 auto 6px; }
           .cert-signature span { font-size: 0.85rem; color: #999; font-family: 'Nunito', sans-serif; }
           .cert-badge { font-size: 3rem; }
+          .cert-id { margin-top: 16px; font-family: 'Nunito', sans-serif; font-size: 0.8rem; color: #aaa; letter-spacing: 2px; }
           @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } .certificate { box-shadow: none; } }
         </style>
       </head>
@@ -1373,6 +1397,7 @@
                 <span>${today.toLocaleDateString('en-AU', dateOptions)}</span>
               </div>
             </div>
+            <div class="cert-id">${certId}</div>
             <div class="cert-stars bottom">⭐ ✨ 🌟 ✨ ⭐</div>
           </div>
         </div>
