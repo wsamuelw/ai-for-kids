@@ -1375,18 +1375,18 @@
         } else {
           feedback.textContent = '🤔 Not quite, try again!';
           feedback.style.color = '#d63031';
-        }
 
-        const resetBtn = document.createElement('button');
-        resetBtn.textContent = '🔄 Try Again';
-        resetBtn.style.cssText = 'margin-top:8px;font-family:"Nunito",sans-serif;font-size:0.85rem;padding:6px 14px;border:2px solid #ddd;border-radius:10px;background:#fff;cursor:pointer;';
-        resetBtn.addEventListener('click', () => {
-          answered = false;
-          btns.forEach(b => b.classList.remove('correct', 'wrong'));
-          feedback.textContent = '';
-          resetBtn.remove();
-        });
-        feedback.parentNode.insertBefore(resetBtn, feedback.nextSibling);
+          const resetBtn = document.createElement('button');
+          resetBtn.textContent = '🔄 Try Again';
+          resetBtn.style.cssText = 'margin-top:8px;font-family:"Nunito",sans-serif;font-size:0.85rem;padding:6px 14px;border:2px solid #ddd;border-radius:10px;background:#fff;cursor:pointer;';
+          resetBtn.addEventListener('click', () => {
+            answered = false;
+            btns.forEach(b => b.classList.remove('correct', 'wrong'));
+            feedback.textContent = '';
+            resetBtn.remove();
+          });
+          feedback.parentNode.insertBefore(resetBtn, feedback.nextSibling);
+        }
       });
     });
   });
